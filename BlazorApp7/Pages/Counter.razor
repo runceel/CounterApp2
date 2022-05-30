@@ -5,26 +5,20 @@
 
 <h1>Counter</h1>
 
-<p role="status">Current count: @currentCount</p>
+<p role="status">Current count: @CurrentCount</p>
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
 @code {
-    [SupplyParameterFromQuery]
+    [SupplyParameterFromQuery(Name = "count")]
     [Parameter]
-    public int InitialCount { get; set; }
-    private int currentCount;
-
-    protected override void OnParametersSet()
-    {
-        currentCount = InitialCount;
-    }
+    public int CurrentCount { get; set; }
 
     private void IncrementCount()
     {
-        currentCount++;
+        CurrentCount++;
         _navigationManager.NavigateTo(
-            _navigationManager.GetUriWithQueryParameter("initialCount", currentCount),
+            _navigationManager.GetUriWithQueryParameter("count", CurrentCount),
             replace: true
         );
     }
