@@ -1,0 +1,36 @@
+﻿@using Microsoft.AspNetCore.WebUtilities
+@inject NavigationManager _navigationManager
+<Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="OnNavigateAsync">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p role="alert">Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+@code {
+    private int _count = 0;
+    private Task OnNavigateAsync(NavigationContext context)
+    {
+        if (context.Path.StartsWith("counter?"))
+        {
+            // initialCount パラメーター付きの場合は値を保存
+            var uri = _navigationManager.ToAbsoluteUri(context.Path);
+            var parameters = QueryHelpers.ParseQuery(uri.Query);
+            int.TryParse(parameters["initialCount"].ToString(), out _count);
+        }
+        else if(context.Path == "counter" && _count != 0)
+        {
+            // counter ページへのパラメーター無しの遷移の場合は保存した値をパラメーターに足す
+            var path = _navigationManager.GetUriWithQueryParameter("initialCount", _count);
+            _navigationManager.NavigateTo(path, replace: true);
+        }
+
+        return Task.CompletedTask;
+    }
+}
